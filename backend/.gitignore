@@ -1,0 +1,3 @@
+backend/*.csv
+backend/scaler.pkl
+backend/random_forest_model.pkl
