@@ -1,0 +1,56 @@
+/* src/styles/custom.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Premium container with max-width constraints */
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+
+  /* Elegant card styling with subtle glow */
+  .bg-card {
+    @apply bg-white/90 backdrop-blur-sm rounded-xl shadow-xl border border-gray-100;
+  }
+
+  /* Vibrant accent color with smooth transitions */
+  .text-highlight {
+    @apply text-indigo-600;
+  }
+
+  /* Sophisticated muted text */
+  .text-muted-foreground {
+    @apply text-gray-500/90;
+  }
+
+  /* Premium button with gradient border */
+ 
+  
+  .button-outline::before {
+    @apply absolute inset-0 border-2 border-transparent rounded-xl;
+    content: '';
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 2px;
+  }
+  
+  .button-outline:hover::before {
+    @apply opacity-90;
+  }
+  
+  .button-outline span {
+    @apply relative text-indigo-600 font-medium group-hover:text-white;
+  }
+  
+  .button-outline:hover {
+    @apply bg-gradient-to-r from-indigo-600 to-purple-500 shadow-lg shadow-indigo-500/20;
+  }
+
+  /* Custom icon placeholder (replace with actual icon) */
+  .icon-placeholder {
+    @apply bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white;
+  }
+}
