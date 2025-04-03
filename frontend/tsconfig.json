@@ -18,7 +18,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "./src", // This sets the base directory to the 'src' folder
+    "paths": {
+      "@/*": ["*"] // This tells TypeScript that '@' refers to the 'src' folder
+    }
   },
   "include": [
     "src"
