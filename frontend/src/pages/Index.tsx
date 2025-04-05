@@ -1,24 +1,44 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import '../styles/custom.css';
 
 const Index = () => {
+  const [file, setFile] = useState<File | null>(null); // Explicitly type the file state
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => { // Type the event parameter
+    const uploadedFile = event.target.files?.[0]; // Optional chaining to handle null files
+    
+    if (uploadedFile && uploadedFile.type === "text/csv" && uploadedFile.size <= 10485760) {
+      setFile(uploadedFile);
+      setErrorMessage("");
+    } else {
+      setFile(null);
+      setErrorMessage("Please upload a valid CSV file (Max size: 10MB).");
+    }
+  };
+
+  const handleUploadClick = () => {
+    if (file) {
+      // Here you can handle the file upload (e.g., send the file to a server)
+      alert(`File "${file.name}" is ready to be uploaded.`);
+    } else {
+      alert("Please select a valid file before uploading.");
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-light-blue-100 text-gray-800 overflow-hidden">
-
       {/* Full-screen background with a soft light color */}
       <div className="absolute inset-0 z-0 bg-light-blue-100"></div>
 
       {/* Animated Background Circles - Smaller and at Corners */}
       <div className="absolute inset-0 z-10 pointer-events-none">
         <svg className="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
-          {/* Top Left Circle */}
           <circle cx="100" cy="100" r="80" stroke="#FF6A00" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-2s" />
-          {/* Top Right Circle */}
           <circle cx="1820" cy="100" r="80" stroke="#FF4500" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-3s" />
-          {/* Bottom Left Circle */}
           <circle cx="100" cy="980" r="80" stroke="#FFD700" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-4s" />
-          {/* Bottom Right Circle */}
           <circle cx="1820" cy="980" r="80" stroke="#ADFF2F" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-5s" />
-          {/* Small Circles Near Corners */}
           <circle cx="300" cy="200" r="60" stroke="#FF6347" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-6s" />
           <circle cx="1600" cy="800" r="60" stroke="#FFD700" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-7s" />
           <circle cx="600" cy="300" r="50" stroke="#FF6A00" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-8s" />
@@ -26,12 +46,19 @@ const Index = () => {
         </svg>
       </div>
 
-      {/* Floating icons in the background */}
-      <div className="absolute top-0 left-0 z-0 animate__animated animate__fadeIn animate__delay-2s">
-        <div className="floating-icon animate__animated animate__pulse animate__infinite">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-orange-300 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
+      {/* Login and Signup Buttons in Top Right Corner */}
+      <div className="absolute top-5 right-5 z-20">
+        <div className="flex space-x-4">
+          <Link to="/login">
+            <button className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-400 transition-all duration-200 ease-in-out">
+              Login
+            </button>
+          </Link>
+          <Link to="/signup">
+            <button className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-400 transition-all duration-200 ease-in-out">
+              Signup
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -72,8 +99,24 @@ const Index = () => {
                 <h3 className="mt-4 text-xl font-bold text-gray-800">Drag and drop your CSV file</h3>
                 <p className="mt-2 text-md text-gray-600">Or click to browse files</p>
                 <p className="mt-2 text-xs text-gray-600">Max size: 10MB</p>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="mt-4 p-2 rounded-lg border-2 border-gray-300"
+                />
+                {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
               </div>
             </div>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleUploadClick}
+              className="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-400 transition-all duration-200 ease-in-out"
+            >
+              Upload
+            </button>
           </div>
 
           {/* Results Section with Shiny Animations */}
@@ -82,26 +125,16 @@ const Index = () => {
               <div className="flex items-center">
                 <div className="icon-placeholder h-8 w-8 mr-3">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400 animate__animated animate__pulse animate__infinite" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m14 0h2a2 2 0 002-2v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6m-8 0v-6h-4v6m6 0h-2" />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-semibold text-gray-800">Results Overview</h2>
+                <h2 className="text-3xl font-semibold text-blue-500">Results</h2>
               </div>
-              <button className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-400 transition-all duration-200 ease-in-out">Download Results</button>
             </div>
-            <div className="flex space-x-6">
-              <div className="bg-blue-50 rounded-lg p-6 w-1/3 text-center shadow-md hover:scale-105 transition-all duration-300">
-                <p className="text-xl font-semibold text-gray-700">Total Transactions</p>
-                <p className="text-3xl font-bold text-gray-800">1,234</p>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-6 w-1/3 text-center shadow-md hover:scale-105 transition-all duration-300">
-                <p className="text-xl font-semibold text-gray-700">Fraudulent Activity Detected</p>
-                <p className="text-3xl font-bold text-red-600">125</p>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-6 w-1/3 text-center shadow-md hover:scale-105 transition-all duration-300">
-                <p className="text-xl font-semibold text-gray-700">Accuracy Rate</p>
-                <p className="text-3xl font-bold text-green-600">99.8%</p>
-              </div>
+            <div className="flex justify-center text-center mt-8">
+              <p className="text-lg text-gray-600">
+                After uploading your CSV file, the fraud detection system will analyze your transactions and show you the results.
+              </p>
             </div>
           </div>
         </div>
