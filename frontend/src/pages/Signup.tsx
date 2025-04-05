@@ -1,8 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';  // Import Link for navigation
 import '../styles/custom.css';
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   // Randomly position the floating icons on the screen
   const getRandomPosition = () => {
     const x = Math.random() * window.innerWidth;
@@ -33,7 +32,7 @@ const Login: React.FC = () => {
         })}
       </div>
 
-      {/* Login Card */}
+      {/* Signup Card */}
       <div className="max-w-6xl w-full grid md:grid-cols-2 gap-10 glassy border border-white border-opacity-20 rounded-3xl shadow-2xl p-10 relative z-10">
         {/* Left Branding Section */}
         <div className="hidden md:flex flex-col justify-center items-start px-8 text-white space-y-6">
@@ -50,9 +49,9 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Login Form */}
+        {/* Right Signup Form */}
         <div className="bg-white/10 backdrop-blur-xl p-8 rounded-2xl border border-white/20 shadow-lg w-full text-white">
-          <h2 className="text-3xl font-bold mb-6 text-center">Sign In to Your Account</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">Create a New Account</h2>
 
           <form className="space-y-6">
             <div>
@@ -74,23 +73,25 @@ const Login: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between text-sm text-gray-300">
-              <label className="flex items-center space-x-2">
-                <input type="checkbox" className="accent-teal-400" />
-                <span>Remember me</span>
-              </label>
-              <a href="#" className="text-teal-400 hover:underline">Forgot Password?</a>
+            <div>
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-white mb-1">Confirm Password</label>
+              <input
+                type="password"
+                id="confirm-password"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-teal-400 focus:outline-none transition-all"
+                placeholder="••••••••"
+              />
             </div>
 
             <button
               type="submit"
               className="w-full mt-4 bg-teal-500 hover:bg-teal-400 transition-all duration-300 py-3 rounded-xl font-semibold shadow-md hover:shadow-xl"
             >
-              Sign In
+              Sign Up
             </button>
 
             <p className="text-sm text-gray-300 text-center mt-4">
-              Don't have an account? <Link to="/signup" className="text-teal-400 hover:underline">Sign Up</Link>
+              Already have an account? <a href="/login" className="text-teal-400 hover:underline">Sign In</a>
             </p>
           </form>
         </div>
@@ -99,4 +100,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Signup;
