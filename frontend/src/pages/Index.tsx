@@ -2,11 +2,42 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import '../styles/custom.css';
 
+// Utility function to parse the CSV file
+const parseCSV = (file: File) => {
+  return new Promise<any[]>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = reader.result as string;
+      const rows = text.split('\n').map(row => row.split(','));
+      const headers = rows[0];
+      const data = rows.slice(1).map(row => {
+        let obj: { [key: string]: string } = {};
+        row.forEach((cell, index) => {
+          obj[headers[index]] = cell;
+        });
+        return obj;
+      });
+      resolve(data);
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsText(file);
+  });
+};
+
+// Simple fraud detection logic (can be enhanced with ML or rules)
+const detectFraud = (data: any[]) => {
+  // For simplicity, we'll flag transactions where the amount is greater than a threshold.
+  // This can be replaced with more complex fraud detection logic.
+  const fraudThreshold = 10000; // Example threshold (10,000 units of currency)
+  return data.filter(transaction => parseFloat(transaction['Amount']) > fraudThreshold);
+};
+
 const Index = () => {
   const [file, setFile] = useState<File | null>(null); // Explicitly type the file state
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [fraudResults, setFraudResults] = useState<any[]>([]); // State to store fraud detection results
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => { // Type the event parameter
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0]; // Optional chaining to handle null files
     
     if (uploadedFile && uploadedFile.type === "text/csv" && uploadedFile.size <= 10485760) {
@@ -18,10 +49,19 @@ const Index = () => {
     }
   };
 
-  const handleUploadClick = () => {
+  const handleUploadClick = async () => {
     if (file) {
-      // Here you can handle the file upload (e.g., send the file to a server)
-      alert(`File "${file.name}" is ready to be uploaded.`);
+      try {
+        // Parse the CSV file
+        const data = await parseCSV(file);
+        // Perform fraud detection on the parsed data
+        const detectedFraud = detectFraud(data);
+        setFraudResults(detectedFraud);
+        alert(`Fraud detection completed. Found ${detectedFraud.length} fraudulent transactions.`);
+      } catch (error) {
+        setErrorMessage("Error parsing the file. Please try again.");
+        console.error(error);
+      }
     } else {
       alert("Please select a valid file before uploading.");
     }
@@ -29,10 +69,8 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen bg-light-blue-100 text-gray-800 overflow-hidden">
-      {/* Full-screen background with a soft light color */}
       <div className="absolute inset-0 z-0 bg-light-blue-100"></div>
 
-      {/* Animated Background Circles - Smaller and at Corners */}
       <div className="absolute inset-0 z-10 pointer-events-none">
         <svg className="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
           <circle cx="100" cy="100" r="80" stroke="#FF6A00" strokeWidth="4" fill="transparent" className="animate__animated animate__fadeIn animate__delay-2s" />
@@ -46,7 +84,6 @@ const Index = () => {
         </svg>
       </div>
 
-      {/* Login and Signup Buttons in Top Right Corner */}
       <div className="absolute top-5 right-5 z-20">
         <div className="flex space-x-4">
           <Link to="/login">
@@ -63,7 +100,6 @@ const Index = () => {
       </div>
 
       <div className="container relative py-12 z-10">
-        {/* Main Header with Animated Text and Glowing Effect */}
         <header className="mb-12 text-center animate__animated animate__fadeIn animate__delay-1s">
           <div className="flex items-center justify-center mb-6">
             <div className="icon-placeholder h-16 w-16 mr-3 animate__animated animate__pulse animate__infinite">
@@ -80,7 +116,6 @@ const Index = () => {
           </p>
         </header>
 
-        {/* Call to Action Section with Glowing Effect */}
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="bg-light-blue-50 p-10 rounded-xl shadow-2xl transform transition-all hover:scale-105 hover:shadow-xl hover:bg-light-blue-200 cursor-pointer ease-out duration-300 hover:shadow-blue-400">
             <div className="flex items-center mb-6">
@@ -119,24 +154,42 @@ const Index = () => {
             </button>
           </div>
 
-          {/* Results Section with Shiny Animations */}
-          <div className="bg-light-blue-50 p-10 rounded-xl shadow-2xl animate__animated animate__fadeIn animate__delay-3s hover:scale-105">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center">
-                <div className="icon-placeholder h-8 w-8 mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400 animate__animated animate__pulse animate__infinite" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m14 0h2a2 2 0 002-2v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6m-8 0v-6h-4v6m6 0h-2" />
-                  </svg>
+          {fraudResults.length > 0 && (
+            <div className="bg-light-blue-50 p-10 rounded-xl shadow-2xl animate__animated animate__fadeIn animate__delay-3s hover:scale-105">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center">
+                  <div className="icon-placeholder h-8 w-8 mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400 animate__animated animate__pulse animate__infinite" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m14 0h2a2 2 0 002-2v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6m-8 0v-6h-4v6m6 0h-2" />
+                    </svg>
+                  </div>
+                  <h2 className="text-3xl font-semibold text-blue-500">Fraudulent Transactions Detected</h2>
                 </div>
-                <h2 className="text-3xl font-semibold text-blue-500">Results</h2>
+              </div>
+              <div className="overflow-auto">
+                <table className="min-w-full table-auto">
+                  <thead>
+                    <tr>
+                      <th className="text-left px-4 py-2">Transaction ID</th>
+                      <th className="text-left px-4 py-2">Amount</th>
+                      <th className="text-left px-4 py-2">Date</th>
+                      <th className="text-left px-4 py-2">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fraudResults.map((transaction, index) => (
+                      <tr key={index} className="bg-white border-b">
+                        <td className="px-4 py-2">{transaction['TransactionID']}</td>
+                        <td className="px-4 py-2">${transaction['Amount']}</td>
+                        <td className="px-4 py-2">{transaction['Date']}</td>
+                        <td className="px-4 py-2">{transaction['Details']}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-            <div className="flex justify-center text-center mt-8">
-              <p className="text-lg text-gray-600">
-                After uploading your CSV file, the fraud detection system will analyze your transactions and show you the results.
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
