@@ -86,7 +86,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="bg-black text-center text-gray-200 py-8">
-        <p className="text-lg">© 2025 Fraud Finder | All Rights Reserved</p>
+        <p className="text-lg">© 2025 Fraud Finder | All Rights Reserved @Jeevan Shrestha</p>
       </footer>
     </div>
   );

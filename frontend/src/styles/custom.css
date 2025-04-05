@@ -25,8 +25,6 @@
   }
 
   /* Premium button with gradient border */
- 
-  
   .button-outline::before {
     @apply absolute inset-0 border-2 border-transparent rounded-xl;
     content: '';
@@ -36,15 +34,15 @@
     mask-composite: exclude;
     padding: 2px;
   }
-  
+
   .button-outline:hover::before {
     @apply opacity-90;
   }
-  
+
   .button-outline span {
     @apply relative text-indigo-600 font-medium group-hover:text-white;
   }
-  
+
   .button-outline:hover {
     @apply bg-gradient-to-r from-indigo-600 to-purple-500 shadow-lg shadow-indigo-500/20;
   }
@@ -53,4 +51,49 @@
   .icon-placeholder {
     @apply bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white;
   }
+}
+
+/* Glassy effect */
+.glassy {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+}
+
+/* Floating Icons Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+  }
+}
+
+.floating-icon {
+  animation: float 6s ease-in-out infinite;
+  position: absolute;
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 0;
+  filter: drop-shadow(0 0 6px #00bcd4) drop-shadow(0 0 8px #ff4081);
+}
+
+.floating-icon:nth-child(odd) {
+  filter: drop-shadow(0 0 6px #ff4081) drop-shadow(0 0 8px #00bcd4);
+}
+
+.floating-icon:nth-child(even) {
+  filter: drop-shadow(0 0 6px #ffeb3b) drop-shadow(0 0 8px #ff5722);
+}
+
+/* Container for the floating icons to ensure they are in the background */
+.floating-icons-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1; /* Ensure icons stay behind login card */
+  pointer-events: none;
 }
