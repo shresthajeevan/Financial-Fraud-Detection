@@ -15,57 +15,55 @@ export interface Transaction {
    */
   export const parseCSV = async (file: File): Promise<Transaction[]> => {
     return new Promise((resolve, reject) => {
+      const transactions: Transaction[] = [];
       const reader = new FileReader();
+      let headerRow: string[] = [];
+      let isFirstRow = true;
   
       reader.onload = (event) => {
         try {
-          const csvData = event.target?.result as string;
-          const lines = csvData.split('\n');
+          const text = event.target?.result as string;
+          const rows = text.split('\n');
   
-          // Get headers from the first line
-          const headers = lines[0].split(',').map((header) => header.trim());
+          rows.forEach((row, index) => {
+            if (!row.trim()) return; // Skip empty rows
   
-          const transactions: Transaction[] = [];
+            const values = row.split(',').map(value => value.trim());
   
-          for (let i = 1; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
+            if (isFirstRow) {
+              headerRow = values;
+              isFirstRow = false;
+              return;
+            }
   
-            const values = line.split(',');
+            // Create transaction object dynamically based on header
             const transaction: any = {};
-  
-            headers.forEach((header, index) => {
-              let value = values[index]?.trim();
-  
-              if (header === 'amount') {
-                const numValue = parseFloat(value);
-                transaction[header] = isNaN(numValue) ? 0 : numValue;
-              } else if (header === 'isFraudulent') {
-                transaction[header] = value?.toLowerCase() === 'true';
+            headerRow.forEach((header, i) => {
+              const value = values[i];
+              if (header.toLowerCase() === 'amount') {
+                transaction[header.toLowerCase()] = parseFloat(value) || 0;
               } else {
-                transaction[header] = value;
+                transaction[header.toLowerCase()] = value;
               }
             });
   
-            // Ensure all required fields exist
-            const requiredFields = ['id', 'date', 'amount', 'description', 'category', 'accountId'];
-            const hasAllFields = requiredFields.every((field) => transaction[field] !== undefined);
-  
-            if (hasAllFields) {
+            // Ensure all required fields are present
+            if (transaction.id && transaction.date && transaction.amount !== undefined) {
               transactions.push(transaction as Transaction);
             }
-          }
+          });
   
           resolve(transactions);
         } catch (error) {
-          reject(new Error('Failed to parse CSV: ' + error));
+          reject(new Error('Error parsing CSV file'));
         }
       };
   
       reader.onerror = () => {
-        reject(new Error('Failed to read file'));
+        reject(new Error('Error reading file'));
       };
   
+      // Read the file in chunks
       reader.readAsText(file);
     });
   };
